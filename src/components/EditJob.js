@@ -9,35 +9,38 @@ import {
   TextInput
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { createJob } from "../slices/jobs";
+import { updateJob  } from "../slices/jobs";
 import { useNavigation } from '@react-navigation/native';
 
-const AddJob = ({ route }) => {
+const EditJob = () => {
 
-  //const [createJob, { data, error, isLoading }] = useCreateJobMutation();
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [salary, setSalary] = useState('');
-  const [company, setCompany] = useState('');
-  const [category, setCategory] = useState('');
+  const job = useSelector(state => state.jobs.data);
+  
+  const [title, setTitle] = useState(job.title);
+  const [description, setDescription] = useState(job.description);
+  const [salary, setSalary] = useState(job.salary);
+  const [company, setCompany] = useState(job.company);
+  const [category, setCategory] = useState(job.category);
 
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [success, setSuccess] = useState(false);
-  const [loading, setLoading] = useState(false);
+
+  
+  const loading = useSelector(state => state.jobs.isLoading);
 
   const navigation = useNavigation();
 
   const dispatch = useDispatch();
 
-  const handleAdd = async () => {
-
-    setLoading(true);
-    setError(false)
+  const handleUpdate = async (id) => {
+    
+    setError(false);
     setSuccess(false);
 
-    dispatch(createJob({
+    dispatch(updateJob({
+      id:id,
       title: title,
       description: description,
       salary: salary,
@@ -59,10 +62,16 @@ const AddJob = ({ route }) => {
         }, 2000);
       }
 
-      setLoading(false);
-
     });
 
+    // if (result) {
+
+
+    //     navigation.navigate('Jobs');
+    //     useGetJobsQuery;
+    //   //refresh main screen,
+    //   //reset
+    // }
   }
 
 
@@ -70,44 +79,49 @@ const AddJob = ({ route }) => {
     <View styles={{ flex: 1 }}>
       <View styles>
         <View style={styles.jobDetailsContainer}>
-          {success ? <View style={styles.successMessage}><Text style={{ color: '#fff' }}>Succesfully posted a job.</Text></View> : null}
+          {success ? <View style={styles.successMessage}><Text style={{ color: '#fff' }}>Succesfully updated the job.</Text></View> : null}
           {loading ? <View style={styles.loadingMessage}><ActivityIndicator color={'#fff'}></ActivityIndicator></View> : null}
           {error ? <View style={styles.errorMessage}><Text style={{ color: '#fff' }}>{errorMessage}</Text></View> : null}
           <View>
             <Text style={styles.label}>Title</Text>
             <TextInput style={styles.textInput}
               onChangeText={(value) => setTitle(value)}
+              value={title}
             />
           </View>
           <View>
             <Text style={styles.label}>Description</Text>
             <TextInput style={styles.textInput}
               onChangeText={(value) => setDescription(value)}
+              value={description}
             />
           </View>
           <View>
             <Text style={styles.label}>Salary</Text>
             <TextInput style={styles.textInput} keyboardType='number-pad'
               onChangeText={(value) => setSalary(value)}
+              value={salary.toString()}
             />
           </View>
           <View>
             <Text style={styles.label}>Company</Text>
             <TextInput style={styles.textInput}
               onChangeText={(value) => setCompany(value)}
+              value={company}
             />
           </View>
           <View>
             <Text style={styles.label}>Category</Text>
             <TextInput style={styles.textInput}
               onChangeText={(value) => setCategory(value)}
+              value={category}
             />
           </View>
         </View>
         {!loading ?
           <View>
-            <Pressable onPress={() => handleAdd()} style={styles.button}>
-              <Text style={styles.buttonText}>Add</Text>
+            <Pressable onPress={() => handleUpdate(job.id)} style={styles.button}>
+              <Text style={styles.buttonText}>Update</Text>
             </Pressable>
           </View> : null}
       </View>
@@ -166,4 +180,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default AddJob;
+export default EditJob;

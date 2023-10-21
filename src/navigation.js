@@ -3,11 +3,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import JobsList from './components/JobList';
 import AddJob from './components/AddJob';
+import JobDetails from './components/JobDetails';
+import EditJob from './components/EditJob';
+
 import { Pressable, Text } from 'react-native';
 
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-// import { useSelector } from 'react-redux';
-// import { selectNumberOfItems } from './store/cartSlice';
+
 ;
 
 const Stack = createNativeStackNavigator();
@@ -45,11 +47,17 @@ const Navigation = () => {
           options={{ presentation: 'modal' }}
         />
         
-        {/* <Stack.Screen
+        <Stack.Screen
           name="Job Details"
-          component={JobDetailsScreen}
+          component={JobDetails}
           options={{ presentation: 'modal' }}
-        />*/}
+        />
+
+        <Stack.Screen
+          name="Edit Details"
+          component={EditJob}
+          options={{ presentation: 'modal' }}
+        />
 
       </Stack.Navigator>
     </NavigationContainer>

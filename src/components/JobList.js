@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import JobDetails from './JobDetails';
+import { useNavigation } from '@react-navigation/native';
 
 import {
   StyleSheet,
@@ -11,7 +13,8 @@ import {
 } from 'react-native';
 
 import {
-  retrieveJobs
+  retrieveJobs,
+  retrieveJob
 } from "../slices/jobs";
 
 
@@ -19,6 +22,7 @@ const JobsList = () => {
 
 
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   const isError = useSelector(state => state.jobs.isError);
   const reload = useSelector(state => state.jobs.reload);
@@ -29,12 +33,12 @@ const JobsList = () => {
   const [page, setPage] = useState(1);
   const [showNextButton, setShowNextButton] = useState(false);
   const [startPage, setStartPage] = useState(0);
-  console.log(reload + ' =  fetch ' + fetch + ' = page  ' + page, 'chcker');
 
   useEffect(() => {
+
     dispatch(retrieveJobs(page)).then((res) => {
 
-      
+        
         setJobs([...jobs, ...res.payload.data]);
 
         if (res.payload.links.next === null) {
@@ -69,43 +73,15 @@ const JobsList = () => {
     }
   }
 
-  const handleNext = () => {
-    setJobs([]);
-    setFetch(fetch + 1);
-    //setPaginate(true);
-  }
-
-  const HandlePageOne = () => {
-    setJobs([]);
-    setPage(1);
-    setFetch(fetch + 1);
-    //setPaginate(true);
-  }
 
   function renderLoader() {
 
     if (paginate)
       return (<View style={{ paddingVertical: 30, alignItems: 'center' }} ><ActivityIndicator color={'#ccc'} /><Text>Loading more jobs...</Text></View>);
 
-    if (!paginate && !showNextButton)
+    if (!paginate)
       return (<View style={{ paddingVertical: 30, alignItems: 'center' }} ><Text>No more jobs..</Text></View>);
 
-    if (showNextButton && page == 3)
-      return (<View style={{ paddingVertical: 30, alignItems: 'center' }} ><Pressable onPress={() => handleNext()} style={styles.button}>
-        <Text style={styles.buttonText}>Next Page</Text>
-      </Pressable>
-      </View>);
-
-    if (showNextButton && page > 3)
-      return (<View style={{ paddingVertical: 30, justifyContent: "space-around", flexDirection: 'row', textAlign:'center' }} >
-        <Pressable onPress={() => HandlePageOne()} style={styles.buttonNav}>
-          <Text style={styles.buttonText}>First Page</Text>
-        </Pressable>
-
-        <Pressable onPress={() => handleNext()} style={styles.buttonNav}>
-          <Text style={styles.buttonText}>Next Page</Text>
-        </Pressable>
-      </View>);
   }
 
   if (isError) {
@@ -121,8 +97,8 @@ const JobsList = () => {
         <Pressable
           onPress={() => {
             // update selected product
+            dispatch(retrieveJob(item.id))
             // dispatch(productsSlice.actions.setSelectedProduct(item.id));
-
             navigation.navigate('Job Details', { id: item.id });
           }}
           style={styles.itemContainer}
@@ -143,31 +119,7 @@ const JobsList = () => {
 };
 
 const styles = StyleSheet.create({
-  button: {
-    backgroundColor: 'black',
-    width: '60%',
-    alignSelf: 'center',
-    padding: 20,
-    borderRadius: 100,
-    alignItems: 'center',
-  },
-
-  buttonNav: {
-    flex: 2,
-    backgroundColor: 'black',
-    width: '20%',
-    alignSelf: 'center',
-    padding: 20,
-    borderRadius: 100,
-    margin: 10,
-    alignItems: 'center',
-  },
-
-  buttonText: {
-    color: 'white',
-    fontWeight: '500',
-    fontSize: 16,
-  },
+  
   itemContainer: {
     width: '100%',
     padding: 1,
